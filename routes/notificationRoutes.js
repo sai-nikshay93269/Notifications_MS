@@ -6,7 +6,6 @@ const router = express.Router();
 router.use(authMiddleware);
 // POST /notifications - Save a notification
 router.post("/", saveNotification);
-router.post("/send-email", sendNotificationEmail);
 
 
 module.exports = router;

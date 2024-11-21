@@ -6,7 +6,7 @@ const connectMessageBroker = async () => {
     try {
         const connection = await amqp.connect(process.env.RABBITMQ_URI);
         const channel = await connection.createChannel();
-        const queue = "ticket_updates";
+        const queue = "ticket_notifications";
 
         await channel.assertQueue(queue, { durable: true });
         console.log("Connected to RabbitMQ and listening for messages...");

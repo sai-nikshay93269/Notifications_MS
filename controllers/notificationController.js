@@ -1,50 +1,40 @@
-// controllers/notificationController.js
 const Notification = require('../models/Notification');
+const transporter = require("../services/emailService");
 
 // Function to save notification in the database
 const saveNotification = async (req, res) => {
     try {
-        const { userId, email, message } = req.body;
+        // Extract data from the request body
+        const { userId, email, message, ticketId } = req.body;
 
-        // Create a new notification using the Notification model
+        // Validate the required fields
+        if (!userId || !email || !message) {
+            return res.status(400).json({ message: 'Missing required fields: userId, email, or message.' });
+        }
+
+        // Create a new notification object
         const notification = new Notification({
             userId,
             email,
             message,
-            status: 'pending',  // Default status when notification is saved
+            status: 'sent', // Default status when notification is saved
             createdAt: new Date(),
+            ticketId, // Optional: Link notification to a ticket if provided
         });
 
         // Save the notification to the database
         await notification.save();
 
-        res.status(201).json({ message: 'Notification saved successfully.' });
+        console.log('Notification saved successfully.');
+
+        // Send a success response
+        res.status(200).json({ message: 'Notification saved successfully.' });
     } catch (error) {
         console.error('Failed to save notification:', error.message);
-        res.status(500).json({ error: 'Failed to save notification.' });
+
+        // Send an error response
+        res.status(500).json({ message: 'Failed to save notification.', error: error.message });
     }
 };
 
-const transporter = require("../services/emailService");
-
-async function sendNotificationEmail(req, res) {
-  const { email, message } = req.body;
-
-  try {
-    await transporter.sendMail({
-      from: '"IT Support" <support@example.com>', // Sender address
-      to: email,                                  // Recipient address
-      subject: "Ticket Update",                  // Subject
-      text: message                               // Plain text body
-    });
-
-    res.status(200).send({ message: "Email sent successfully!" });
-  } catch (error) {
-    console.error("Error sending email:", error);
-    res.status(500).send({ message: "Failed to send email" });
-  }
-}
-
-module.exports = { saveNotification,
-    sendNotificationEmail
- };
+module.exports = { saveNotification };
