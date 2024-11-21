@@ -7,7 +7,7 @@ const connectMessageBroker = require("./services/messageBroker");
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5002;
+const PORT = process.env.PORT || 5004;
 
 // Middleware
 app.use(express.json());
@@ -16,7 +16,7 @@ app.use(express.json());
 connectDB();
 
 // Routes
-app.use("/api", notificationRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // Start RabbitMQ listener
 connectMessageBroker();
